@@ -1,3 +1,8 @@
+"""
+Main FastAPI application entry point.
+This module initializes the FastAPI app and includes the authentication routes.
+"""
+
 from fastapi import FastAPI
 from src.routes.auth.register import router as register_router
 

@@ -1,8 +1,12 @@
+"""Unit tests for the RegisterForm Pydantic model."""
+
 import pytest
 from pydantic import ValidationError
 from src.schemas.auth import RegisterForm
 
-def test_valid_register_form():
+
+def test_valid_register_form() -> None:
+    """Test that a valid registration form passes validation."""
     data = {
         "username": "testuser",
         "email": "test@example.com",
@@ -22,7 +26,8 @@ def test_valid_register_form():
     "We",
     "W" * 40 + "a1!"
 ])
-def test_invalid_passwords(password):
+def test_invalid_passwords(password: str) -> None:
+    """Test that invalid passwords raise a ValidationError."""
     data = {
         "username": "user",
         "email": "user@example.com",
@@ -33,7 +38,8 @@ def test_invalid_passwords(password):
         RegisterForm(**data)
 
 
-def test_passwords_do_not_match():
+def test_passwords_do_not_match() -> None:
+    """Test that mismatched passwords raise a ValidationError."""
     data = {
         "username": "user",
         "email": "user@example.com",
@@ -44,11 +50,13 @@ def test_passwords_do_not_match():
         RegisterForm(**data)
     assert "Passwords do not match" in str(exc_info.value)
 
+
 @pytest.mark.parametrize("username", [
     "ab",
     "a" * 33
 ])
-def test_username_length(username):
+def test_username_length(username: str) -> None:
+    """Test that usernames outside the allowed length raise a ValidationError."""
     data = {
         "username": username,
         "email": "a@b.com",
@@ -57,7 +65,8 @@ def test_username_length(username):
     }
     with pytest.raises(ValidationError):
         RegisterForm(**data)
-        
+
+
 @pytest.mark.parametrize("email", [
     "plainaddress",
     "@missingusername.com",
@@ -65,7 +74,8 @@ def test_username_length(username):
     "username@com.",
     "username@com"
 ])
-def test_email_format(email):
+def test_email_format(email: str) -> None:
+    """Test that invalid email formats raise a ValidationError."""
     data = {
         "username": "validuser",
         "email": email,
