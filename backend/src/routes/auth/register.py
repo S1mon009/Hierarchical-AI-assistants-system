@@ -3,9 +3,11 @@
 This module defines endpoints related to user authentication, such as registration.
 """
 
+import bcrypt
 from fastapi import APIRouter, Form, HTTPException
 from pydantic import ValidationError
 from src.schemas.auth import RegisterForm
+from src.config.config import settings
 
 router = APIRouter()
 
@@ -42,7 +44,12 @@ async def register(
             password=password,
             repeat_password=repeat_password
         )
-        return {"message": "Registration successful"}
+
+        password_bytes = form.password.encode('utf-8')
+        salt = bcrypt.gensalt(rounds=settings.bcrypt_salt_rounds)
+        hashed_password = bcrypt.hashpw(password_bytes, salt)
+
+        return {"message": hashed_password}
     except ValidationError as e:
         errors = [f"{err['loc'][0]}: {err['msg']}" for err in e.errors()]
         raise HTTPException(status_code=400, detail=errors) from e

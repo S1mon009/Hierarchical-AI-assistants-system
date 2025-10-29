@@ -16,6 +16,7 @@ class Settings(BaseSettings):
 
     host: str
     port: int
+    bcrypt_salt_rounds: int
 
     class Config:
         """Pydantic configuration for environment variable loading."""
