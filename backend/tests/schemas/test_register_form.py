@@ -15,10 +15,12 @@ def test_valid_register_form():
 
 
 @pytest.mark.parametrize("password", [
-    "weakpass",       # brak wielkiej litery, cyfry i znaku specjalnego
-    "WEAKPASS",       # brak małej litery, cyfry i znaku specjalnego
-    "Weakpass",       # brak cyfry i znaku specjalnego
-    "Weakpass1",      # brak znaku specjalnego
+    "weakpass",
+    "WEAKPASS",
+    "Weakpass",
+    "Weakpass1",
+    "We",
+    "W" * 40 + "a1!"
 ])
 def test_invalid_passwords(password):
     data = {
@@ -42,11 +44,31 @@ def test_passwords_do_not_match():
         RegisterForm(**data)
     assert "Passwords do not match" in str(exc_info.value)
 
-
-def test_username_length():
+@pytest.mark.parametrize("username", [
+    "ab",
+    "a" * 33
+])
+def test_username_length(username):
     data = {
-        "username": "ab",  # za krótki
+        "username": username,
         "email": "a@b.com",
+        "password": "StrongPass1!",
+        "repeat_password": "StrongPass1!",
+    }
+    with pytest.raises(ValidationError):
+        RegisterForm(**data)
+        
+@pytest.mark.parametrize("email", [
+    "plainaddress",
+    "@missingusername.com",
+    "username@.com",
+    "username@com.",
+    "username@com"
+])
+def test_email_format(email):
+    data = {
+        "username": "validuser",
+        "email": email,
         "password": "StrongPass1!",
         "repeat_password": "StrongPass1!",
     }
