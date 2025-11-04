@@ -1,5 +1,11 @@
-"""Unit tests for the RegisterForm Pydantic model."""
+"""Unit tests for the RegisterForm Pydantic model.
 
+This module contains a suite of unit tests verifying the validation logic
+of the RegisterForm model. It ensures that valid data passes validation,
+while invalid inputs such as weak passwords, mismatched passwords, invalid
+emails, or usernames outside the allowed length trigger appropriate
+ValidationError exceptions.
+"""
 import pytest
 from pydantic import ValidationError
 from src.schemas.auth import RegisterForm

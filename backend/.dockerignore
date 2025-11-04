@@ -1,0 +1,15 @@
+**pycache**/
+_.pyc
+_.pyo
+_.pyd
+.venv/
+pytest_cache/
+.vscode/
+.env
+_.log
+docs/
+mkdocs.yml
+\*.md
+.DS_Store
+Thumbs.db
+tasks.py

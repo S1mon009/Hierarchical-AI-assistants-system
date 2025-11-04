@@ -1,11 +1,11 @@
-"""Pydantic schema for user registration.
+"""User registration schema using Pydantic BaseModel.
 
-This module defines the RegisterForm model, which validates user registration data,
-including username, email, and password fields, with custom validators.
+This module defines the RegisterForm class, which handles validation of user registration data.
+It ensures that input fields such as username, email, and password meet specific format
+and complexity requirements, including password confirmation.
 """
-
 import re
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator, ValidationInfo
 
 class RegisterForm(BaseModel):
     """Pydantic model representing a registration form.
@@ -48,12 +48,12 @@ class RegisterForm(BaseModel):
 
     @field_validator("repeat_password")
     @classmethod
-    def passwords_match(cls, repeat_password: str, info) -> str:
+    def passwords_match(cls, repeat_password: str, info: ValidationInfo) -> str:
         """Validate that repeat_password matches password.
 
         Args:
             repeat_password (str): The repeated password to validate.
-            info: Validator context containing other field values.
+            info (ValidationInfo): Validator context containing other field values.
 
         Raises:
             ValueError: If repeat_password does not match password.
@@ -61,7 +61,7 @@ class RegisterForm(BaseModel):
         Returns:
             str: The validated repeat_password.
         """
-        password: str = info.data.get("password")
+        password: str | None = info.data.get("password")
         if password and repeat_password != password:
             raise ValueError("Passwords do not match")
         return repeat_password
