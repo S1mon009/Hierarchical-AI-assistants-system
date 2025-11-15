@@ -8,8 +8,8 @@ pytest_cache/
 .env
 _.log
 docs/
+tests/
 mkdocs.yml
 \*.md
-.DS_Store
-Thumbs.db
 tasks.py
+.gitignore
