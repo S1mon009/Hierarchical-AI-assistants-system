@@ -8,8 +8,8 @@ When executed directly, this module launches the backend service that provides
 the REST API for the Hierarchical AI Assistants System.
 """
 import uvicorn
-from src.config import settings
+from src.core import config
 from src.app import app
 
 if __name__ == "__main__":
-    uvicorn.run(app, host=settings.host, port=settings.port)
+    uvicorn.run(app, host=config.host, port=config.port)
