@@ -1,25 +1,5 @@
-"""
-Sign-in schemas module.
-
-This module defines Pydantic models used for user authentication (sign-in).
-It provides validation for user credentials, including email format and
-password complexity requirements.
-
-Classes:
-    SignInModel (BaseModel): Pydantic model representing a sign-in form,
-        validating the email and password fields with custom complexity rules.
-
-Example:
-    ```python
-    from src.schemas.auth.sign_in import SignInModel
-
-    form = SignInModel(
-        email="user@example.com",
-        password="StrongPass1!"
-    )
-    ```
-"""
 import re
+from typing import List
 from pydantic import BaseModel, EmailStr, Field, field_validator, ValidationInfo
 
 class SignUpSchema(BaseModel):
@@ -80,6 +60,15 @@ class SignUpSchema(BaseModel):
             raise ValueError("Passwords do not match")
         return repeat_password
 
+class SignUpResponseSchema(BaseModel):
+    message: str
+
+class VerifyEmailResponseSchema(BaseModel):
+    message: str
+
+class SignOutResponseSchema(BaseModel):
+    message: str
+
 class SignInSchema(BaseModel):
     """Pydantic model representing a sign-in form.
 
@@ -117,16 +106,21 @@ class SignInSchema(BaseModel):
             raise ValueError("Password must contain at least one special character")
         return password
 
-class UserOutSchema(BaseModel):
-    id: str
-    email: str
-    username: str
-
-class SessionOutSchema(BaseModel):
+class CheckAndRefreshSchema(BaseModel):
     access_token: str
     refresh_token: str
 
-class SignInResponseSchema(BaseModel):
-    message: str
-    user: UserOutSchema
-    session: SessionOutSchema
+class CheckAndRefreshResponseSchema(BaseModel):
+    access_token: str
+    refresh_token: str
+
+class HealthCheckResponseSchema(BaseModel):
+    status: str
+
+class AmrItem(BaseModel):
+    method: str
+    timestamp: int
+
+class GetClaimsResponseSchema(BaseModel):
+    aal: str
+    amr: List[AmrItem]
