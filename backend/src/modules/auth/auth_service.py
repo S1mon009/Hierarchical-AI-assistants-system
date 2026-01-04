@@ -95,6 +95,8 @@ class AuthService:
             }
 
             print(data['access_token'])
+            
+            return data
 
             query_string = urlencode(data)
 

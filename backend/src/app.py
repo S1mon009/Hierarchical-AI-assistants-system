@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.modules.auth.auth_module import auth_module
 from src.modules.users.users_module import users_module
+from src.modules.chat.chat_module import chat_module
 
 origins = [
     "http://localhost:3000",
@@ -24,3 +25,4 @@ app.add_middleware(
 )
 app.include_router(auth_module.router)
 app.include_router(users_module.router)
+app.include_router(chat_module.router)
