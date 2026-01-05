@@ -14,6 +14,7 @@ class Config(BaseSettings):
     max_chat_history: int
     stream_timeout: int
     title_generation_prompt: str
+    encrypt_key: str
 
     model_config = SettingsConfigDict(env_file=".env")
 

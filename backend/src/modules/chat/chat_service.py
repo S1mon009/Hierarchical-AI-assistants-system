@@ -2,19 +2,50 @@ import json
 import asyncio
 from uuid import UUID
 from fastapi.responses import StreamingResponse
-from src.modules.chat.chat_repository import ChatRepository
-from .agents.main_agent import MainAgent
+from src.modules.chat.repositories.chat_repository import ChatRepository
+from src.modules.chat.agents.main_agent import invoke
 
 class ChatService:
     def __init__(self, repo: ChatRepository):
         self.repo = repo
-        self.agent = MainAgent()
 
     async def create_chat(self, user_id: UUID, user_message: str):
-        chat = self.repo.create_chat(user_id, user_message[:60])
+        chat = self.repo.create_chat(
+            user_id=user_id,
+            title="New chat"
+        )
+
         chat_id = chat["id"]
-        self.repo.add_message(chat_id, "user", user_message)
-        return chat
+
+        user_msg = self.repo.add_message(
+            chat_id=chat_id,
+            role="user",
+            content=user_message
+        )
+
+        response = invoke([
+            {"role": "user", "content": user_message}
+        ])
+
+        ai_content = response.content
+
+        ai_msg = self.repo.add_message(
+            chat_id=chat_id,
+            role="assistant",
+            content=ai_content
+        )
+
+        title = user_message[:60]
+
+        self.repo.supabase.table("ai_chats") \
+            .update({"title": title}) \
+            .eq("id", chat_id) \
+            .execute()
+
+        return {
+            "chat": chat,
+            "messages": [user_msg, ai_msg]
+        }
 
     async def send_message(self, chat_id: UUID, user_id: UUID, user_message: str):
         messages = self.repo.get_messages(chat_id)
@@ -23,7 +54,7 @@ class ChatService:
         history.append({"role": "user", "content": user_message})
         self.repo.add_message(chat_id, "user", user_message)
 
-        ai_response = self.agent.invoke(history).content
+        ai_response = invoke(history).content
         self.repo.add_message(chat_id, "assistant", ai_response)
 
         return self.repo.get_messages(chat_id)
@@ -36,7 +67,7 @@ class ChatService:
         self.repo.add_message(chat_id, "user", user_message)
 
         async def event_generator():
-            ai_response = self.agent.invoke(history).content
+            ai_response = invoke(history).content
             self.repo.add_message(chat_id, "assistant", ai_response)
 
             chunk_size = 50

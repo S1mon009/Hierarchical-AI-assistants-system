@@ -1,9 +1,8 @@
-from fastapi import APIRouter, Depends, Request
 from uuid import UUID
+from fastapi import APIRouter, Depends, Request
 from src.modules.chat.chat_service import ChatService
 from src.modules.chat.chat_schema import CreateChatSchema, SendMessageSchema
-from src.modules.chat.dependencies import get_current_user
-from fastapi.responses import StreamingResponse
+from src.modules.auth.dependencies import get_current_user
 
 class ChatController:
     def __init__(self, service: ChatService):
